@@ -2,6 +2,9 @@
 <?
 $datetime1 = new DateTime("now");
 echo 'Понеслась)))'. PHP_EOL;
+exec('rmdir /q/s .git');
+exec('rmdir /q/s vendor')
+exec('rm /q composer.json')
 echo 'Клонирую базовый репозиторий...'.PHP_EOL;
 echo exec('git clone https://afashio@bitbucket.org/pushdigital/yii2-push-cms-installer.git core');
 echo "Готово!" . PHP_EOL . PHP_EOL;
@@ -35,8 +38,11 @@ echo "ОК!" . PHP_EOL . PHP_EOL;
 echo "Отравляю файлы в репозиторий!" . PHP_EOL . PHP_EOL;
 echo exec('git commit -m"Initial commit"');
 echo exec('git push origin master');
+
 echo "Готово! Приятной работы!" . PHP_EOL . PHP_EOL;
 $datetime2 = new DateTime("now");
 $interval = $datetime2->diff($datetime1);
 echo 'Установка заняла: ';
 echo $interval->format('%R%I минут, %R%S секунд');
+echo "Финальная очистка!" . PHP_EOL . PHP_EOL;
+exec('rm /q install');
