@@ -1,0 +1,14 @@
+{
+    "name": "afashio/engine_installer",
+    "description": "engine install util",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "afashio",
+            "email": "push.webstudio@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
