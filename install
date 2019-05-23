@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?
+$datetime1 = new DateTime("now");
+echo 'Понеслась)))'. PHP_EOL;
+echo 'Клонирую базовый репозиторий...'.PHP_EOL;
+echo exec('git clone https://afashio@bitbucket.org/pushdigital/yii2-push-cms-installer.git core');
+echo "Готово!" . PHP_EOL . PHP_EOL;
+chdir('core');
+echo "Отвязываюсь от базового репозитория..." . PHP_EOL . PHP_EOL;
+exec('rmdir /q/s .git');
+echo "Готово!" . PHP_EOL . PHP_EOL;
+require 'init';
+echo 'Обновляем зависимости...'.PHP_EOL;
+echo exec('composer update');
+echo "Готово!" . PHP_EOL . PHP_EOL;
+echo 'Начинаю процесс миграции, необходимо настроить подключение к БД'. PHP_EOL;
+echo 'Настроено? [y]' . PHP_EOL;
+$answer = trim(fgets(STDIN));
+if(!strncasecmp($answer, 'y', 1)){
+	echo 'Выполняю миграции...';
+	echo exec('php yii migrate --interactive=0');
+	echo PHP_EOL . 'Миграции выполнены!' . PHP_EOL;
+}
+chdir('..\\');
+echo "Инициализирую новый репозиторий" . PHP_EOL . PHP_EOL;
+echo exec('git init');
+echo "Готово!" . PHP_EOL . PHP_EOL;
+echo "Добавляю файлы!" . PHP_EOL . PHP_EOL;
+echo exec('git add .');
+echo "Готово!" . PHP_EOL . PHP_EOL;
+echo "Введите адрес удаленного репозитория..." . PHP_EOL ;
+$answer = trim(fgets(STDIN));
+echo exec('git remote add origin '.$answer);
+echo "ОК!" . PHP_EOL . PHP_EOL;
+echo "Отравляю файлы в репозиторий!" . PHP_EOL . PHP_EOL;
+echo exec('git commit -m"Initial commit"');
+echo exec('git push origin master');
+echo "Готово! Приятной работы!" . PHP_EOL . PHP_EOL;
+$datetime2 = new DateTime("now");
+$interval = $datetime2->diff($datetime1);
+echo 'Установка заняла: ';
+echo $interval->format('%R%I минут, %R%S секунд');
