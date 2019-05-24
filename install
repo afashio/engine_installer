@@ -1,10 +1,9 @@
-#!/usr/bin/env php
 <?
 $datetime1 = new DateTime("now");
 echo 'Понеслась)))'. PHP_EOL;
 exec('rmdir /q/s .git');
-exec('rmdir /q/s vendor')
-exec('rm /q composer.json')
+exec('rmdir /q/s vendor');
+exec('del /q composer.json');
 echo 'Клонирую базовый репозиторий...'.PHP_EOL;
 echo exec('git clone https://afashio@bitbucket.org/pushdigital/yii2-push-cms-installer.git core');
 echo "Готово!" . PHP_EOL . PHP_EOL;
@@ -45,4 +44,4 @@ $interval = $datetime2->diff($datetime1);
 echo 'Установка заняла: ';
 echo $interval->format('%R%I минут, %R%S секунд');
 echo "Финальная очистка!" . PHP_EOL . PHP_EOL;
-exec('rm /q install');
+exec('del /q install');
