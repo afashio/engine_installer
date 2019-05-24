@@ -1,10 +1,15 @@
-<?
+<?php
 $datetime1 = new DateTime("now");
-echo 'Понеслась)))'. PHP_EOL;
+echo 'Понеслась)))' . PHP_EOL;
 exec('rmdir /q/s .git');
 exec('rmdir /q/s vendor');
 exec('del /q composer.json');
-echo 'Клонирую базовый репозиторий...'.PHP_EOL;
+
+echo 'Нужно будет выгрузить проект в репозиторий?  [ y|n ]' . PHP_EOL;
+
+$push_to_git = trim(fgets(STDIN));
+
+echo 'Клонирую базовый репозиторий...' . PHP_EOL;
 echo exec('git clone https://afashio@bitbucket.org/pushdigital/yii2-push-cms-installer.git core');
 echo "Готово!" . PHP_EOL . PHP_EOL;
 chdir('core');
@@ -12,31 +17,15 @@ echo "Отвязываюсь от базового репозитория..." . 
 exec('rmdir /q/s .git');
 echo "Готово!" . PHP_EOL . PHP_EOL;
 require 'init';
-echo 'Обновляем зависимости...'.PHP_EOL;
+echo 'Обновляем зависимости...' . PHP_EOL;
 echo exec('composer update');
 echo "Готово!" . PHP_EOL . PHP_EOL;
-echo 'Начинаю процесс миграции, необходимо настроить подключение к БД'. PHP_EOL;
-echo 'Настроено? [y]' . PHP_EOL;
-$answer = trim(fgets(STDIN));
-if(!strncasecmp($answer, 'y', 1)){
-	echo 'Выполняю миграции...';
-	echo exec('php yii migrate --interactive=0');
-	echo PHP_EOL . 'Миграции выполнены!' . PHP_EOL;
+
+migrate();
+
+if(!strncasecmp($push_to_git, 'y', 1)){
+    push_to_git();
 }
-chdir('..\\');
-echo "Инициализирую новый репозиторий" . PHP_EOL . PHP_EOL;
-echo exec('git init');
-echo "Готово!" . PHP_EOL . PHP_EOL;
-echo "Добавляю файлы!" . PHP_EOL . PHP_EOL;
-echo exec('git add .');
-echo "Готово!" . PHP_EOL . PHP_EOL;
-echo "Введите адрес удаленного репозитория..." . PHP_EOL ;
-$answer = trim(fgets(STDIN));
-echo exec('git remote add origin '.$answer);
-echo "ОК!" . PHP_EOL . PHP_EOL;
-echo "Отравляю файлы в репозиторий!" . PHP_EOL . PHP_EOL;
-echo exec('git commit -m"Initial commit"');
-echo exec('git push origin master');
 
 echo "Готово! Приятной работы!" . PHP_EOL . PHP_EOL;
 $datetime2 = new DateTime("now");
@@ -45,3 +34,34 @@ echo 'Установка заняла: ';
 echo $interval->format('%R%I минут, %R%S секунд');
 echo "Финальная очистка!" . PHP_EOL . PHP_EOL;
 exec('del /q install');
+
+
+function migrate(){
+    echo 'Начинаю процесс миграции, необходимо настроить подключение к БД' . PHP_EOL;
+    echo 'Настроено? [y]' . PHP_EOL;
+    $answer = trim(fgets(STDIN));
+    if (!strncasecmp($answer, 'y', 1)) {
+        echo 'Выполняю миграции...';
+        exec('yii migrate --migrationPath=@yii/rbac/migrations/ --interactive=0');
+        exec('php yii migrate --interactive=0');
+        exec('yii migrate/up --migrationPath=@vendor/costa-rico/yii2-images/migrations --interactive=0');
+        echo PHP_EOL . 'Миграции выполнены!' . PHP_EOL;
+    }
+}
+
+function push_to_git(){
+    chdir('..\\');
+    echo "Введите адрес удаленного репозитория..." . PHP_EOL;
+    $answer = trim(fgets(STDIN));
+    echo "Инициализирую новый репозиторий" . PHP_EOL . PHP_EOL;
+    echo exec('git init');
+    echo "Готово!" . PHP_EOL . PHP_EOL;
+    echo "Добавляю файлы!" . PHP_EOL . PHP_EOL;
+    echo exec('git add .');
+    echo "Готово!" . PHP_EOL . PHP_EOL;
+    echo exec('git remote add origin ' . $answer);
+    echo "ОК!" . PHP_EOL . PHP_EOL;
+    echo "Отравляю файлы в репозиторий!" . PHP_EOL . PHP_EOL;
+    echo exec('git commit -m"Initial commit"');
+    echo exec('git push origin master');
+}
